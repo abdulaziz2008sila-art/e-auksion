@@ -1,0 +1,518 @@
+(function () {
+  const prefix = "emq-rat-";
+  const baseUrl = "https://api-muloqot.dgov-uic.uz";
+  const currentDomain = window.location.hostname;
+
+  const keysMap = {
+      'new.birdarcha.uz': '0x4AAAAAADemnYIFQDDPVfsw',
+      'license.gov.uz': '0x4AAAAAADemnYIFQDDPVfsw',
+      'e-notarius.uz': '0x4AAAAAADemnYIFQDDPVfsw',
+      'vakolat.adliya.uz': '0x4AAAAAADemnYIFQDDPVfsw',
+      'im.adliya.uz': '0x4AAAAAADemnYIFQDDPVfsw',
+      'e-advokat.uz': '0x4AAAAAADemnYIFQDDPVfsw',
+      'my.adliya.uz': '0x4AAAAAADemnYIFQDDPVfsw',
+      'e-visa.gov.uz': '0x4AAAAAADemnYIFQDDPVfsw',
+      'consulate.mfa.uz': '0x4AAAAAADemnYIFQDDPVfsw',
+      'atto.uz': '0x4AAAAAADemnYIFQDDPVfsw',
+      'uztrans.uz': '0x4AAAAAADepUcou2Z2PfQXj',
+      'my.edu.uz': '0x4AAAAAADepUcou2Z2PfQXj',
+      'transfer.edu.uz': '0x4AAAAAADepUcou2Z2PfQXj',
+      'hemis.uz': '0x4AAAAAADepUcou2Z2PfQXj',
+      'kontrakt.edu.uz': '0x4AAAAAADepUcou2Z2PfQXj',
+      'olimpiada.edu.uz': '0x4AAAAAADepUcou2Z2PfQXj',
+      'my.maktab.uz': '0x4AAAAAADepUcou2Z2PfQXj',
+      'emaktab.uz': '0x4AAAAAADepUcou2Z2PfQXj',
+      'e-shahodatnoma.uz': '0x4AAAAAADepUcou2Z2PfQXj',
+      'xarid.uzex.uz': '0x4AAAAAADepUcou2Z2PfQXj',
+      'new.cooperation.uz': '0x4AAAAAADepZRrKXUY4wUMY',
+      'my.sport.uz': '0x4AAAAAADepZRrKXUY4wUMY',
+      'agroplatforma.uz': '0x4AAAAAADepZRrKXUY4wUMY',
+      'agrosubsidiya.uz': '0x4AAAAAADepZRrKXUY4wUMY',
+      'agro.gov.uz': '0x4AAAAAADepZRrKXUY4wUMY',
+      'singlewindow.uz': '0x4AAAAAADepZRrKXUY4wUMY',
+      'my.soliq.uz': '0x4AAAAAADepZRrKXUY4wUMY',
+      'my3.soliq.uz': '0x4AAAAAADepZRrKXUY4wUMY',
+      'e-imzo.soliq.uz': '0x4AAAAAADepZRrKXUY4wUMY',
+      'k-savdo.soliq.uz': '0x4AAAAAADepZRrKXUY4wUMY',
+      'my.ihma.uz': '0x4AAAAAADepfMrfqZJ__SXN',
+      'xorijdaish.uz': '0x4AAAAAADepfMrfqZJ__SXN',
+      'yoshlardaftari.uz': '0x4AAAAAADepfMrfqZJ__SXN',
+      'my.uzbmb.uz': '0x4AAAAAADepfMrfqZJ__SXN',
+      'uzex.uz': '0x4AAAAAADepfMrfqZJ__SXN',
+      'e-auksion.uz': '0x4AAAAAADepfMrfqZJ__SXN',
+      'cabinet.uzsuv.uz': '0x4AAAAAADepfMrfqZJ__SXN',
+      'cabinetaskug.hududgaz.uz': '0x4AAAAAADepfMrfqZJ__SXN',
+      'egaz.uz': '0x4AAAAAADepfMrfqZJ__SXN',
+      'cabinet.het.uz': '0x4AAAAAADepfMrfqZJ__SXN',
+      'cabinet.veoliaenergy.uz': '0x4AAAAAADepitR5tPA33Ci9',
+      'openbudget.uz': '0x4AAAAAADepitR5tPA33Ci9',
+      'e-qaror.gov.uz': '0x4AAAAAADepitR5tPA33Ci9',
+      'regulation.adliya.uz': '0x4AAAAAADepitR5tPA33Ci9',
+      'petition.gov.uz': '0x4AAAAAADepitR5tPA33Ci9',
+      'xalqnazorati.uz': '0x4AAAAAADepitR5tPA33Ci9',
+      'advice.uz': '0x4AAAAAADepitR5tPA33Ci9',
+      'lex.uz': '0x4AAAAAADepitR5tPA33Ci9',
+      'monitoring.mc.uz': '0x4AAAAAADepitR5tPA33Ci9',
+      'dshk.shaffofqurilish.uz': '0x4AAAAAADepitR5tPA33Ci9',
+      'fmi-platforma.uz': '0x4AAAAAADepmmfGGtb-q27m',
+      'ish.mehnat.uz': '0x4AAAAAADepmmfGGtb-q27m',
+      'osonish.uz': '0x4AAAAAADepmmfGGtb-q27m',
+      'stat.edu.uz': '0x4AAAAAADepmmfGGtb-q27m',
+      'data.egov.uz': '0x4AAAAAADepmmfGGtb-q27m',
+      'gender.stat.uz': '0x4AAAAAADepmmfGGtb-q27m',
+      'nsdg.stat.uz': '0x4AAAAAADepmmfGGtb-q27m',
+      'siat.stat.uz': '0x4AAAAAADepmmfGGtb-q27m',
+      'stat.uz': '0x4AAAAAADepmmfGGtb-q27m',
+      'yashilmakon.eco': '0x4AAAAAADepmmfGGtb-q27m',
+      'openinfo.uz': '0x4AAAAAADepqONZHgJj21hd',
+      'new.openinfo.uz': '0x4AAAAAADepqONZHgJj21hd',
+      'data.meteo.uz': '0x4AAAAAADepqONZHgJj21hd',
+      'monitoring.meteo.uz': '0x4AAAAAADepqONZHgJj21hd',
+      'yoshlarportali.uz': '0x4AAAAAADepqONZHgJj21hd',
+      'vacancy.argos.uz': '0x4AAAAAADepqONZHgJj21hd',
+      'davreestr.uz': '0x4AAAAAADepqONZHgJj21hd',
+      'open.ngis.uz': '0x4AAAAAADepqONZHgJj21hd',
+      'yerelektron.uz': '0x4AAAAAADepqONZHgJj21hd',
+      'eco-service.uz': '0x4AAAAAADepqONZHgJj21hd',
+      'dmi.mehnat.uz': '0x4AAAAAADept3liL2iZE6aK',
+      'e-anticor.uz': '0x4AAAAAADept3liL2iZE6aK',
+      'business.gov.uz': '0x4AAAAAADept3liL2iZE6aK',
+      'vacancy.gov.uz': '0x4AAAAAADept3liL2iZE6aK',
+      'login.emaktab.uz':'0x4AAAAAADept3liL2iZE6aK',
+  };
+
+  const siteKey = keysMap[currentDomain] || '0x4AAAAAADejpBLCQwoQzaBi';
+
+  let currentScript = document.querySelector('script[src*="portal-rating-widget"]') || document.currentScript;
+
+  const dict = {
+      uz: {
+          btn: "Baholash",
+          title: "Portalni baholang",
+          success: "Muvaffaqiyatli qabul qilindi",
+          voted: "Siz avval ovoz bergansiz",
+          sending: "Yuborilmoqda...",
+          error: "Xatolik yuz berdi",
+          securityErr: "Xavfsizlik tekshiruvidan o'tilmadi (Captcha)!",
+          alertVoted: "Siz allaqachon ovoz bergansiz!",
+      },
+      ru: {
+          btn: "Оценить",
+          title: "Оцените портал",
+          success: "Успешно принято",
+          voted: "Вы уже голосовали",
+          sending: "Отправляется...",
+          error: "Произошла ошибка",
+          securityErr: "Проверка безопасности не пройдена!",
+          alertVoted: "Вы уже проголосовали!",
+      },
+      cyrl: {
+          btn: "Баҳолаш",
+          title: "Портални баҳоланг",
+          success: "Муваффақиятли қабул қилинди",
+          voted: "Сиз аввал овоз бергансиз",
+          sending: "Юборилмоқда...",
+          error: "Хатолик юз берди",
+          securityErr: "Хавфсизлик текширувидан ўтилмади!",
+          alertVoted: "Сиз аллақачон овоз бергансиз!",
+      },
+      en: {
+          btn: "Rate",
+          title: "Rate our portal",
+          success: "Vote accepted successfully",
+          voted: "You have already voted",
+          sending: "Sending...",
+          error: "An error occurred",
+          securityErr: "Security verification failed!",
+          alertVoted: "You have already voted!",
+      },
+  };
+
+  let lang = (currentScript && currentScript.getAttribute("data-lang")) || "uz";
+  if (!dict[lang]) lang = "uz";
+  let t = dict[lang];
+
+  let config = {
+      position: (currentScript && currentScript.getAttribute("data-position")) || "bottom-right",
+      offsetX: (currentScript && currentScript.getAttribute("data-offset-x")) || "20",
+      offsetY: (currentScript && currentScript.getAttribute("data-offset-y")) || "20",
+      color: (currentScript && currentScript.getAttribute("data-color")) || "#2563eb",
+      textColor: (currentScript && currentScript.getAttribute("data-text-color")) || "#ffffff",
+      title: (currentScript && currentScript.getAttribute("data-title")) || t.title,
+      btnText: (currentScript && currentScript.getAttribute("data-btn-text")) || t.btn,
+  };
+
+  let posStyles = "";
+  const isUpward = config.position.includes("bottom") || config.position.includes("center");
+
+  if (config.position.includes("bottom")) posStyles += `bottom: ${config.offsetY}px; `;
+  if (config.position.includes("top")) posStyles += `top: ${config.offsetY}px; `;
+  if (config.position.includes("center")) posStyles += `top: 50%; transform: translateY(-50%); `;
+  if (config.position.includes("right")) posStyles += `right: ${config.offsetX}px; `;
+  if (config.position.includes("left")) posStyles += `left: ${config.offsetX}px; `;
+
+  const styles = `
+      #${prefix}wrapper {
+          position: fixed;
+          ${posStyles}
+          z-index: 2147483647;
+          font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+          pointer-events: none;
+      }
+
+      #${prefix}wrapper * {
+          box-sizing: border-box;
+          margin: 0;
+          padding: 0;
+          letter-spacing: normal;
+          word-spacing: normal;
+          text-transform: none;
+          text-indent: 0;
+          text-shadow: none;
+          line-height: normal;
+          list-style: none;
+          background: transparent;
+          outline: none;
+      }
+
+      #${prefix}btn {
+          pointer-events: auto;
+          background-color: ${config.color}!important;
+          color: ${config.textColor}!important;
+          border: none!important;
+          border-radius: 9999px!important;
+          padding: 10px 20px!important;
+          font-size: 15px!important;
+          font-weight: 500!important;
+          cursor: pointer;
+          box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.1)!important;
+          display: flex!important;
+          align-items: center!important;
+          justify-content: center!important;
+          gap: 8px!important;
+          transition: transform 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease!important;
+          white-space: nowrap!important;
+      }
+
+      #${prefix}btn:hover {
+          transform: translateY(-2px)!important;
+          box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -4px rgba(0, 0, 0, 0.1)!important;
+          filter: brightness(110%);
+      }
+
+      #${prefix}btn svg {
+          width: 18px!important;
+          height: 18px!important;
+          fill: currentColor!important;
+      }
+
+      #${prefix}popover {
+          pointer-events: auto;
+          position: absolute!important;
+          ${isUpward ? "bottom: 100%; margin-bottom: 15px;" : "top: 100%; margin-top: 15px;"}
+          ${config.position.includes("right") ? "right: 0;" : "left: 0;"}
+          background: #ffffff!important;
+          border-radius: 12px!important;
+          box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.15), 0 10px 10px -5px rgba(0, 0, 0, 0.05)!important;
+          border: 1px solid #e5e7eb!important;
+          padding: 24px!important;
+          width: 320px!important;
+          opacity: 0;
+          transform: translateY(${isUpward ? "10px" : "-10px"}) scale(0.95);
+          transition: opacity 0.25s cubic-bezier(0.4, 0, 0.2, 1), transform 0.25s cubic-bezier(0.4, 0, 0.2, 1)!important;
+          transform-origin: ${isUpward ? (config.position.includes("right") ? "bottom right" : "bottom left") : config.position.includes("right") ? "top right" : "top left"};
+          visibility: hidden;
+          display: flex!important;
+          flex-direction: column!important;
+          gap: 16px!important;
+          color: #111827!important;
+      }
+
+      #${prefix}popover.${prefix}show {
+          opacity: 1!important;
+          transform: translateY(0) scale(1)!important;
+          visibility: visible!important;
+      }
+
+      #${prefix}title {
+          font-size: 16px!important;
+          font-weight: 600!important;
+          text-align: center!important;
+          color: #1f2937!important;
+      }
+
+      #${prefix}stars {
+          display: flex!important;
+          justify-content: center!important;
+          gap: 10px!important;
+          direction: ltr!important;
+      }
+
+      /* Yulduzchalar qulflangan holati uchun CSS qo'shildi */
+      #${prefix}stars.${prefix}disabled {
+          pointer-events: none!important;
+          opacity: 0.4!important;
+          filter: grayscale(100%)!important;
+      }
+
+      .${prefix}star {
+          cursor: pointer!important;
+          font-size: 40px!important;
+          color: #d1d5db!important;
+          transition: color 0.15s ease, transform 0.15s cubic-bezier(0.34, 1.56, 0.64, 1)!important;
+          user-select: none!important;
+      }
+
+      .${prefix}star:hover, .${prefix}star.${prefix}hover {
+          transform: scale(1.15)!important;
+      }
+
+      .${prefix}star.${prefix}active {
+          color: #f59e0b!important;
+      }
+
+      #${prefix}result {
+          font-size: 14px!important;
+          text-align: center!important;
+          display: none;
+          padding: 10px!important;
+          border-radius: 8px!important;
+          background: #f3f4f6;
+          color: #374151;
+          margin-top: 8px!important;
+          font-weight: 500!important;
+      }
+
+      #cf-turnstile-container {
+          display: flex;
+          justify-content: center;
+          margin-top: 10px;
+          min-height: 65px;
+      }
+
+      .${prefix}legal {
+          font-size: 10px!important;
+          color: #9ca3af!important;
+          text-align: center!important;
+          margin-top: 5px!important;
+          line-height: 1.2!important;
+      }
+      .${prefix}legal a {
+          color: inherit!important;
+          text-decoration: underline!important;
+      }
+  `;
+
+  const styleTag = document.createElement("style");
+  styleTag.innerHTML = styles;
+  document.head.appendChild(styleTag);
+
+  let html = `
+      <div id="${prefix}popover">
+          <div id="${prefix}title">${config.title}</div>
+          <div id="${prefix}stars" class="${prefix}disabled">
+              <span class="${prefix}star" data-v="1">&#9733;</span>
+              <span class="${prefix}star" data-v="2">&#9733;</span>
+              <span class="${prefix}star" data-v="3">&#9733;</span>
+              <span class="${prefix}star" data-v="4">&#9733;</span>
+              <span class="${prefix}star" data-v="5">&#9733;</span>
+          </div>
+
+          <div id="cf-turnstile-container"></div>
+
+          <div id="${prefix}result"></div>
+          <div class="${prefix}legal">
+              Protected by Cloudflare. <a href="https://www.cloudflare.com/privacypolicy/" target="_blank">Privacy</a> -
+              <a href="https://www.cloudflare.com/website-terms/" target="_blank">Terms</a>
+          </div>
+      </div>
+      <button id="${prefix}btn">
+          <svg viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+          <span>${config.btnText}</span>
+      </button>
+  `;
+
+  const wrapper = document.createElement("div");
+  wrapper.id = `${prefix}wrapper`;
+  wrapper.innerHTML = html;
+  document.body.appendChild(wrapper);
+
+  let turnstileScript = document.createElement("script");
+  turnstileScript.src = "https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit";
+  turnstileScript.async = true;
+  turnstileScript.defer = true;
+  document.head.appendChild(turnstileScript);
+
+  function generateDeviceId() {
+      return "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx".replace(/[xy]/g, function (c) {
+          const r = (Math.random() * 16) | 0;
+          return (c === "x" ? r : (r & 0x3) | 0x8).toString(16);
+      });
+  }
+
+  let deviceId = localStorage.getItem("device_id");
+  if (!deviceId) {
+      deviceId = generateDeviceId();
+      localStorage.setItem("device_id", deviceId);
+  }
+
+  setTimeout(() => {
+      const btn = document.getElementById(`${prefix}btn`);
+      const popover = document.getElementById(`${prefix}popover`);
+      const stars = document.querySelectorAll(`.${prefix}star`);
+      const resultText = document.getElementById(`${prefix}result`);
+      const savedRating = localStorage.getItem("voted_rating_portal_domain");
+
+      let isSubmitting = false;
+      let cfToken = null;
+      let turnstileWidgetId = null;
+
+      btn.addEventListener("click", (e) => {
+          e.stopPropagation();
+          popover.classList.toggle(`${prefix}show`);
+
+          const hasVoted = localStorage.getItem("voted_rating_portal_domain");
+
+          if (!hasVoted && popover.classList.contains(`${prefix}show`) && typeof turnstile !== 'undefined' && turnstileWidgetId === null) {
+              turnstileWidgetId = turnstile.render('#cf-turnstile-container', {
+                  sitekey: siteKey,
+                  callback: function(token) {
+                      cfToken = token;
+                      document.getElementById(`${prefix}stars`).classList.remove(`${prefix}disabled`);
+                  },
+                  'error-callback': function() {
+                      cfToken = null;
+                      document.getElementById(`${prefix}stars`).classList.add(`${prefix}disabled`);
+                  },
+                  'expired-callback': function() {
+                      cfToken = null;
+                      document.getElementById(`${prefix}stars`).classList.add(`${prefix}disabled`);
+                  }
+              });
+          }
+      });
+
+      document.addEventListener("click", (e) => {
+          if (!wrapper.contains(e.target)) {
+              popover.classList.remove(`${prefix}show`);
+          }
+      });
+
+      function fillStars(rating, type = "active") {
+          stars.forEach((s) => {
+              if (parseInt(s.getAttribute("data-v")) <= rating) {
+                  if (type === "hover") s.classList.add(`${prefix}hover`);
+                  if (type === "active") s.classList.add(`${prefix}active`);
+              } else {
+                  if (type === "hover") s.classList.remove(`${prefix}hover`);
+                  if (type === "active") s.classList.remove(`${prefix}active`);
+              }
+          });
+      }
+
+      if (savedRating) {
+          fillStars(savedRating, "active");
+          resultText.style.display = "block";
+          resultText.style.color = "#10b981";
+          resultText.style.background = "#d1fae5";
+          resultText.innerText = t.voted;
+          document.getElementById('cf-turnstile-container').style.display = 'none';
+          document.getElementById(`${prefix}stars`).classList.remove(`${prefix}disabled`);
+      }
+
+      stars.forEach((star) => {
+          star.addEventListener("mouseover", function () {
+              if (localStorage.getItem("voted_rating_portal_domain") || isSubmitting) return;
+              fillStars(this.getAttribute("data-v"), "hover");
+          });
+
+          star.parentElement.addEventListener("mouseleave", function () {
+              stars.forEach((s) => s.classList.remove(`${prefix}hover`));
+          });
+
+          star.addEventListener("click", function () {
+              if (localStorage.getItem("voted_rating_portal_domain")) {
+                  alert(t.alertVoted);
+                  return;
+              }
+
+              if (!cfToken) {
+                  resultText.style.display = "block";
+                  resultText.style.color = "#ef4444";
+                  resultText.style.background = "#fee2e2";
+                  resultText.innerText = t.securityErr;
+                  return;
+              }
+
+              if (isSubmitting) return;
+              isSubmitting = true;
+
+              const rating = this.getAttribute("data-v");
+
+              resultText.style.display = "block";
+              resultText.style.color = "#3b82f6";
+              resultText.style.background = "#dbeafe";
+              resultText.innerText = t.sending;
+
+              fetch(`${baseUrl}/api/v1/portals/rate`, {
+                  method: "POST",
+                  headers: {
+                      "Content-Type": "application/json",
+                      Accept: "application/json",
+                  },
+                  body: JSON.stringify({
+                      rating: rating,
+                      device_id: deviceId,
+                      turnstile_token: cfToken,
+                  }),
+              })
+                  .then((res) => res.json().then((data) => ({ status: res.status, body: data })))
+                  .then((response) => {
+                      isSubmitting = false;
+                      if (response.status === 200) {
+                          resultText.style.color = "#10b981";
+                          resultText.style.background = "#d1fae5";
+                          resultText.innerText = t.success;
+                          localStorage.setItem("voted_rating_portal_domain", rating);
+                          fillStars(rating, "active");
+                          document.getElementById('cf-turnstile-container').style.display = 'none';
+                      } else {
+                          resultText.style.color = "#ef4444";
+                          resultText.style.background = "#fee2e2";
+                          resultText.innerText = response.body.message;
+                          if (
+                              response.status === 400 &&
+                              response.body.message &&
+                              response.body.message.includes("bergansiz")
+                          ) {
+                              resultText.innerText = t.voted;
+                              const actualVote = response.body.voted ? response.body.voted : rating;
+                              localStorage.setItem("voted_rating_portal_domain", actualVote);
+                              fillStars(actualVote, "active");
+                              document.getElementById('cf-turnstile-container').style.display = 'none';
+                          } else {
+                              if (turnstileWidgetId !== null) {
+                                  turnstile.reset(turnstileWidgetId);
+                                  cfToken = null;
+                                  document.getElementById(`${prefix}stars`).classList.add(`${prefix}disabled`);
+                              }
+                          }
+                      }
+                  })
+                  .catch((err) => {
+                      isSubmitting = false;
+                      resultText.style.color = "#ef4444";
+                      resultText.style.background = "#fee2e2";
+                      resultText.innerText = t.error;
+                      console.error("Rating Error:", err);
+
+                      if (turnstileWidgetId !== null) {
+                          turnstile.reset(turnstileWidgetId);
+                          cfToken = null;
+                          document.getElementById(`${prefix}stars`).classList.add(`${prefix}disabled`);
+                      }
+                  });
+          });
+      });
+  }, 200);
+})();
