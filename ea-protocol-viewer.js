@@ -2,7 +2,7 @@
   var DEFAULT_PDF = './_E-AUKSION_ __ Bayonnomani tekshirish_files/ELEKTRON.pdf';
   var DEFAULT_WORKER = './_E-AUKSION_ __ Bayonnomani tekshirish_files/pdfjs/pdf.worker.min.js';
   var ANIM_MS = 280;
-  var MAX_PIXEL_RATIO = 2;
+  var MAX_OUTPUT_SCALE = 3;
 
   function eaGetScriptEl() {
     return document.querySelector('script[src*="ea-protocol-viewer.js"]');
@@ -30,6 +30,46 @@
 
   function eaGetPdfJs() {
     return window.pdfjsLib || window['pdfjs-dist/build/pdf'];
+  }
+
+  function eaIsMobile() {
+    return window.matchMedia && window.matchMedia('(max-width: 768px)').matches;
+  }
+
+  function eaGetOutputScale() {
+    var dpr = window.devicePixelRatio || 1;
+    if (eaIsMobile()) return Math.min(Math.max(dpr, 2), MAX_OUTPUT_SCALE);
+    return Math.min(dpr, MAX_OUTPUT_SCALE);
+  }
+
+  function eaGetRenderWidth(body) {
+    if (body && body.clientWidth > 0) return body.clientWidth;
+    var card = body && body.closest('.ea-protocol-dialog__card');
+    if (card && card.clientWidth > 0) return card.clientWidth;
+    return Math.min(window.innerWidth, 800);
+  }
+
+  function eaWaitForDialogReady(body) {
+    return new Promise(function (resolve) {
+      var deadline = Date.now() + 700;
+
+      function tryMeasure() {
+        var width = eaGetRenderWidth(body);
+        if (width > 50 && Date.now() >= deadline - 400) {
+          requestAnimationFrame(function () {
+            resolve(eaGetRenderWidth(body));
+          });
+          return;
+        }
+        if (Date.now() > deadline) {
+          resolve(width > 0 ? width : Math.min(window.innerWidth, 800));
+          return;
+        }
+        requestAnimationFrame(tryMeasure);
+      }
+
+      window.setTimeout(tryMeasure, ANIM_MS + 40);
+    });
   }
 
   function eaLoadPdfXhr(url, pdfjs) {
@@ -72,26 +112,31 @@
     return eaLoadPdfXhr(docUrl, pdfjs).catch(loadFromUrl);
   }
 
-  function eaRenderPage(page, pagesWrap, container) {
+  function eaRenderPage(page, pagesWrap, renderWidth) {
     var baseViewport = page.getViewport({ scale: 1 });
-    var wrapWidth = pagesWrap.clientWidth || container.clientWidth || 760;
-    var cssScale = wrapWidth / baseViewport.width;
-    var pixelRatio = Math.min(window.devicePixelRatio || 1, MAX_PIXEL_RATIO);
-    var viewport = page.getViewport({ scale: cssScale * pixelRatio });
+    var cssScale = renderWidth / baseViewport.width;
+    var outputScale = eaGetOutputScale();
+    var viewport = page.getViewport({ scale: cssScale });
     var canvas = document.createElement('canvas');
+    var ctx = canvas.getContext('2d', { alpha: false });
+
     canvas.className = 'ea-protocol-pdf-page';
-    canvas.width = Math.floor(viewport.width);
-    canvas.height = Math.floor(viewport.height);
-    canvas.style.width = Math.floor(viewport.width / pixelRatio) + 'px';
-    canvas.style.height = Math.floor(viewport.height / pixelRatio) + 'px';
+    canvas.width = Math.floor(viewport.width * outputScale);
+    canvas.height = Math.floor(viewport.height * outputScale);
+    canvas.style.width = '100%';
+    canvas.style.height = 'auto';
+
     pagesWrap.appendChild(canvas);
+
+    var transform = outputScale !== 1 ? [outputScale, 0, 0, outputScale, 0, 0] : null;
     return page.render({
-      canvasContext: canvas.getContext('2d'),
-      viewport: viewport
+      canvasContext: ctx,
+      viewport: viewport,
+      transform: transform
     }).promise;
   }
 
-  function eaRenderPdf(url, container) {
+  function eaRenderPdf(url, container, body, renderWidth) {
     var pdfjs = eaGetPdfJs();
     if (!pdfjs) {
       container.innerHTML = '<p class="ea-protocol-pdf-error">PDF.js yuklanmadi</p>';
@@ -107,11 +152,12 @@
       pagesWrap.className = 'ea-protocol-pdf-pages';
       container.appendChild(pagesWrap);
 
+      var width = renderWidth || eaGetRenderWidth(body);
       var tasks = [];
       for (var i = 1; i <= pdf.numPages; i++) {
         (function (pageNum) {
           tasks.push(pdf.getPage(pageNum).then(function (page) {
-            return eaRenderPage(page, pagesWrap, container);
+            return eaRenderPage(page, pagesWrap, width);
           }));
         })(i);
       }
@@ -124,6 +170,7 @@
   function eaOpenProtocolDialog() {
     var dialog = document.getElementById('ea-protocol-dialog');
     var content = document.getElementById('ea-protocol-content');
+    var body = dialog && dialog.querySelector('.ea-protocol-dialog__body');
     if (!dialog || !content) return;
 
     dialog.classList.add('is-open');
@@ -136,8 +183,9 @@
       });
     });
 
-    eaRenderPdf(eaGetPdfPath(), content).then(function () {
-      var body = dialog.querySelector('.ea-protocol-dialog__body');
+    eaWaitForDialogReady(body).then(function (renderWidth) {
+      return eaRenderPdf(eaGetPdfPath(), content, body, renderWidth);
+    }).then(function () {
       if (body) body.scrollTop = 0;
     });
   }

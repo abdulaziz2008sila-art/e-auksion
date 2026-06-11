@@ -974,6 +974,11 @@ body[unresolved] {opacity: 0; display: block; overflow: hidden; position: relati
             opacity: 0 !important; transition: opacity 0.28s cubic-bezier(0.4, 0, 0.2, 1) !important;
           }
           #ea-protocol-dialog.is-open.is-visible .ea-protocol-dialog__backdrop { opacity: 1 !important; }
+          @media (max-width: 768px) {
+            #ea-protocol-dialog .ea-protocol-dialog__card {
+              width: 100vw !important; max-width: 100vw !important;
+            }
+          }
           #ea-protocol-dialog .ea-protocol-dialog__card {
             position: relative !important; z-index: 1 !important; width: 800px !important; max-width: 80vw !important;
             height: 100vh !important; max-height: 100vh !important; background: #fff !important; border-radius: 0 !important;
@@ -1008,12 +1013,14 @@ body[unresolved] {opacity: 0; display: block; overflow: hidden; position: relati
           }
           #ea-protocol-content { width: 100% !important; min-height: 100% !important; background: #fff !important; }
           .ea-protocol-pdf-pages {
-            display: flex !important; flex-direction: column !important; align-items: center !important;
-            gap: 0 !important; padding: 0 !important; margin: 0 !important; background: #fff !important;
+            display: flex !important; flex-direction: column !important; align-items: stretch !important;
+            width: 100% !important; gap: 0 !important; padding: 0 !important; margin: 0 !important; background: #fff !important;
           }
           .ea-protocol-pdf-page {
-            display: block !important; max-width: 100% !important; height: auto !important; margin: 0 auto !important;
+            display: block !important; width: 100% !important; height: auto !important; margin: 0 !important;
             padding: 0 !important; background: #fff !important; border: none !important; box-shadow: none !important;
+            image-rendering: -webkit-optimize-contrast !important;
+            image-rendering: crisp-edges !important;
           }
           .ea-protocol-pdf-loading, .ea-protocol-pdf-error {
             padding: 24px !important; text-align: center !important; color: #555 !important;

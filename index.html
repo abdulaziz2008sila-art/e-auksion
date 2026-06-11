@@ -100,6 +100,11 @@
       opacity: 0; transition: opacity 0.28s cubic-bezier(0.4, 0, 0.2, 1);
     }
     #ea-protocol-dialog.is-open.is-visible .ea-protocol-dialog__backdrop { opacity: 1; }
+    @media (max-width: 768px) {
+      #ea-protocol-dialog .ea-protocol-dialog__card {
+        width: 100vw; max-width: 100vw;
+      }
+    }
     #ea-protocol-dialog .ea-protocol-dialog__card {
       position: relative; z-index: 1; width: 800px; max-width: 80vw;
       height: 100vh; max-height: 100vh; background: #fff; border-radius: 0;
@@ -134,12 +139,14 @@
     }
     #ea-protocol-content { width: 100%; min-height: 100%; background: #fff; }
     .ea-protocol-pdf-pages {
-      display: flex; flex-direction: column; align-items: center;
-      gap: 0; padding: 0; margin: 0; background: #fff;
+      display: flex; flex-direction: column; align-items: stretch;
+      width: 100%; gap: 0; padding: 0; margin: 0; background: #fff;
     }
     .ea-protocol-pdf-page {
-      display: block; max-width: 100%; height: auto; margin: 0 auto; padding: 0;
+      display: block; width: 100%; height: auto; margin: 0; padding: 0;
       background: #fff; border: none; box-shadow: none;
+      image-rendering: -webkit-optimize-contrast;
+      image-rendering: crisp-edges;
     }
     .ea-protocol-pdf-loading, .ea-protocol-pdf-error {
       padding: 24px; text-align: center; color: #555;
